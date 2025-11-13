@@ -95,9 +95,122 @@
     // Proceed to Booking Details
     function proceedToBookingDetails() {
         closeRideConfirmedModal();
+        
+        // Move booking to Ongoing tab
+        moveBookingToOngoing(currentBookingData);
+        
         setTimeout(() => {
             showBookingDetailsModal();
         }, 300);
+    }
+    
+    // Move booking from Bookings to Ongoing tab
+    function moveBookingToOngoing(bookingData) {
+        if (!bookingData) return;
+        
+        // Find and remove the booking card from Bookings tab
+        const bookingCards = document.querySelectorAll('#bookings-tab .booking-card');
+        bookingCards.forEach(card => {
+            const acceptBtn = card.querySelector('.btn-accept');
+            if (acceptBtn && acceptBtn.dataset.id === bookingData.id) {
+                // Store booking note if exists
+                const noteElement = card.querySelector('.booking-note');
+                const note = noteElement ? noteElement.textContent.trim() : '';
+                bookingData.note = note;
+                
+                // Remove from Bookings tab
+                card.remove();
+            }
+        });
+        
+        // Create new ongoing booking card
+        const ongoingCard = createOngoingBookingCard(bookingData);
+        
+        // Add to Ongoing tab
+        const ongoingGrid = document.querySelector('#ongoing-tab .bookings-grid');
+        if (ongoingGrid) {
+            ongoingGrid.insertBefore(ongoingCard, ongoingGrid.firstChild);
+        }
+        
+        // Switch to Ongoing tab
+        switchToTab('ongoing');
+    }
+    
+    // Create ongoing booking card
+    function createOngoingBookingCard(data) {
+        const card = document.createElement('div');
+        card.className = 'booking-card ongoing-card';
+        card.dataset.bookingId = data.id;
+        card.dataset.passenger = data.passenger;
+        card.dataset.phone = data.phone;
+        card.dataset.pickup = data.pickup;
+        card.dataset.pickupLat = data.pickupLat;
+        card.dataset.pickupLng = data.pickupLng;
+        card.dataset.dropoff = data.dropoff;
+        card.dataset.dropoffLat = data.dropoffLat;
+        card.dataset.dropoffLng = data.dropoffLng;
+        card.dataset.distance = data.distance;
+        card.dataset.time = data.time;
+        card.dataset.datetime = data.datetime;
+        card.dataset.payment = data.payment;
+        card.dataset.fare = data.fare;
+        
+        card.innerHTML = `
+            <div class="ongoing-header">
+                <div class="ongoing-passenger">
+                    <div class="passenger-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="passenger-info">
+                        <span class="passenger-name">${data.passenger}</span>
+                        <span class="booking-id">Booking ID: ${data.id}</span>
+                    </div>
+                </div>
+                <span class="status-badge status-accepted">Accepted</span>
+            </div>
+            <div class="booking-route">
+                <div class="route-item">
+                    <i class="fa-solid fa-location-dot pickup-icon"></i>
+                    <span>${data.pickup}</span>
+                </div>
+                <div class="route-line"></div>
+                <div class="route-item">
+                    <i class="fa-solid fa-location-dot dropoff-icon"></i>
+                    <span>${data.dropoff}</span>
+                </div>
+            </div>
+            ${data.note ? `<div class="booking-note">${data.note}</div>` : ''}
+            <div class="booking-footer">
+                <span class="booking-price">${data.fare}</span>
+                <button class="btn-view-details">View Details</button>
+            </div>
+        `;
+        
+        // Add click event to the new View Details button
+        const viewBtn = card.querySelector('.btn-view-details');
+        viewBtn.addEventListener('click', function() {
+            showOngoingBookingDetails(card);
+        });
+        
+        return card;
+    }
+    
+    // Switch tabs
+    function switchToTab(tabName) {
+        // Remove active class from all tabs and contents
+        document.querySelectorAll('.schedule-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        
+        // Add active class to selected tab and content
+        const selectedTab = document.querySelector(`[data-tab="${tabName}"]`);
+        const selectedContent = document.getElementById(`${tabName}-tab`);
+        
+        if (selectedTab) selectedTab.classList.add('active');
+        if (selectedContent) selectedContent.classList.add('active');
     }
 
     // Show Booking Details Modal with Map
@@ -255,13 +368,12 @@
         ]);
         map.fitBounds(bounds, { padding: [60, 60] });
 
-        // Add Google Maps button
-        addGoogleMapsButton();
-
-        // Force map to resize
+        // Force map to resize and add Google Maps button after
         setTimeout(() => {
             map.invalidateSize();
-        }, 200);
+            // Add Google Maps button after map is fully rendered
+            addGoogleMapsButton();
+        }, 300);
     }
 
     // Generate waypoints for a more realistic route
@@ -291,9 +403,11 @@
 
     // Add Google Maps button to map
     function addGoogleMapsButton() {
+        if (!map) return;
+        
         const button = L.control({ position: 'bottomright' });
         
-        button.onAdd = function(map) {
+        button.onAdd = function(leafletMap) {
             const div = L.DomUtil.create('div', 'google-maps-button');
             div.innerHTML = `
                 <button id="openGoogleMaps" title="Open in Google Maps">
@@ -311,7 +425,10 @@
         
         // Add click handler
         setTimeout(() => {
-            document.getElementById('openGoogleMaps')?.addEventListener('click', openInGoogleMaps);
+            const btn = document.getElementById('openGoogleMaps');
+            if (btn) {
+                btn.addEventListener('click', openInGoogleMaps);
+            }
         }, 100);
     }
 
@@ -368,19 +485,23 @@
 
     // Contact Passenger - Redirect to Messages
     function contactPassenger() {
-        // Close current modal
+        // Determine which modal is open and get the appropriate data
+        let passengerData = null;
+        
         if (bookingDetailsModal.classList.contains('show')) {
             closeBookingDetailsModal();
+            passengerData = currentBookingData;
         } else if (ongoingBookingModal && ongoingBookingModal.classList.contains('show')) {
             closeOngoingBookingModal();
+            passengerData = currentOngoingBookingData || currentBookingData;
         }
         
         // Store passenger data in sessionStorage for messages page
-        if (currentBookingData) {
+        if (passengerData) {
             sessionStorage.setItem('contactPassenger', JSON.stringify({
-                name: currentBookingData.passenger,
-                phone: currentBookingData.phone,
-                bookingId: currentBookingData.id
+                name: passengerData.passenger,
+                phone: passengerData.phone,
+                bookingId: passengerData.id
             }));
         }
         
@@ -425,36 +546,43 @@
     let ongoingDropoffMarker = null;
     let ongoingRouteLine = null;
     let ongoingCarMarker = null;
+    let currentOngoingBookingData = null;
 
-    // Initialize View Details buttons for ongoing bookings
+    // Initialize View Details buttons for ongoing bookings (using event delegation for dynamically created cards)
     function initOngoingViewButtons() {
-        const viewDetailsButtons = document.querySelectorAll('.btn-view-details');
+        // Use event delegation on the ongoing bookings grid container
+        const ongoingGrid = document.querySelector('#ongoing-tab .bookings-grid');
         
-        viewDetailsButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const card = this.closest('.booking-card');
+        if (ongoingGrid) {
+            ongoingGrid.addEventListener('click', function(e) {
+                // Check if clicked element is or is within a View Details button
+                const button = e.target.closest('.btn-view-details');
+                if (!button) return;
                 
-                // Extract data from the card
+                const card = button.closest('.booking-card');
+                if (!card) return;
+                
+                // Extract data from card's data attributes (for dynamically created cards)
                 const bookingData = {
-                    id: '3131',
-                    passenger: card.querySelector('.booking-passenger')?.textContent.trim().split('\n')[0] || 'Juan Dela Cruz',
-                    phone: '09434325223',
-                    pickup: card.querySelectorAll('.route-item')[0]?.querySelector('span')?.textContent || 'SM North EDSA',
-                    pickupLat: 14.6560,
-                    pickupLng: 121.0320,
-                    dropoff: card.querySelectorAll('.route-item')[1]?.querySelector('span')?.textContent || 'QC Circle',
-                    dropoffLat: 14.6488,
-                    dropoffLng: 121.0499,
-                    distance: '4.2 km',
-                    time: '45 mins',
-                    datetime: 'Sept 15, 2025 • 08:30 AM',
-                    payment: 'Cash',
-                    fare: card.querySelector('.booking-price')?.textContent || '₱126'
+                    id: card.dataset.bookingId || '3131',
+                    passenger: card.dataset.passenger || 'Juan Dela Cruz',
+                    phone: card.dataset.phone || '09434325223',
+                    pickup: card.dataset.pickup || 'SM North EDSA',
+                    pickupLat: parseFloat(card.dataset.pickupLat) || 14.6560,
+                    pickupLng: parseFloat(card.dataset.pickupLng) || 121.0320,
+                    dropoff: card.dataset.dropoff || 'QC Circle',
+                    dropoffLat: parseFloat(card.dataset.dropoffLat) || 14.6488,
+                    dropoffLng: parseFloat(card.dataset.dropoffLng) || 121.0499,
+                    distance: card.dataset.distance || '4.2 km',
+                    time: card.dataset.time || '45 mins',
+                    datetime: card.dataset.datetime || 'Sept 15, 2025 • 08:30 AM',
+                    payment: card.dataset.payment || 'Cash',
+                    fare: card.dataset.fare || '₱126'
                 };
 
                 showOngoingBookingModal(bookingData);
             });
-        });
+        }
 
         // Close button
         document.getElementById('closeOngoingBooking')?.addEventListener('click', closeOngoingBookingModal);
@@ -480,6 +608,9 @@
         document.getElementById('ongoingTripDateTime').textContent = bookingData.datetime;
         document.getElementById('ongoingPaymentMethod').textContent = bookingData.payment;
         document.getElementById('ongoingTotalFare').textContent = bookingData.fare;
+
+        // Store current ongoing booking data for Google Maps
+        currentOngoingBookingData = bookingData;
 
         // Show modal
         ongoingBookingModal.classList.add('show');
@@ -592,10 +723,57 @@
 
         ongoingMap.fitBounds(bounds, { padding: [50, 50] });
 
-        // Fix map rendering issue
+        // Fix map rendering issue and add Google Maps button after
         setTimeout(() => {
             ongoingMap.invalidateSize();
-        }, 200);
+            // Add Google Maps button after map is fully rendered
+            addOngoingGoogleMapsButton();
+        }, 300);
+    }
+
+    // Add Google Maps button to ongoing booking map
+    function addOngoingGoogleMapsButton() {
+        if (!ongoingMap) return;
+        
+        const button = L.control({ position: 'bottomright' });
+        
+        button.onAdd = function(leafletMap) {
+            const div = L.DomUtil.create('div', 'google-maps-button');
+            div.innerHTML = `
+                <button id="openOngoingGoogleMaps" title="Open in Google Maps">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                </button>
+            `;
+            
+            // Prevent map interactions when clicking button
+            L.DomEvent.disableClickPropagation(div);
+            
+            return div;
+        };
+        
+        button.addTo(ongoingMap);
+        
+        // Add click handler
+        setTimeout(() => {
+            const btn = document.getElementById('openOngoingGoogleMaps');
+            if (btn) {
+                btn.addEventListener('click', openOngoingInGoogleMaps);
+            }
+        }, 100);
+    }
+
+    // Open ongoing route in Google Maps
+    function openOngoingInGoogleMaps() {
+        if (!currentOngoingBookingData) return;
+        
+        const origin = `${currentOngoingBookingData.pickupLat},${currentOngoingBookingData.pickupLng}`;
+        const destination = `${currentOngoingBookingData.dropoffLat},${currentOngoingBookingData.dropoffLng}`;
+        
+        // Google Maps URL with directions
+        const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+        
+        // Open in new tab
+        window.open(googleMapsUrl, '_blank');
     }
 
 })();

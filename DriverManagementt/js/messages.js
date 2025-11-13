@@ -9,38 +9,35 @@
         initSendMessage();
         initChatMenu();
         initMobileSidebar();
+        checkForNewConversation(); // Check if coming from schedule page
     });
 
-    // Tab Switching
+    // Filter Switching
     function initMessageTabs() {
-        const tabs = document.querySelectorAll('.message-tab');
-        const pinnedSection = document.getElementById('pinnedSection');
-        const allMessagesSection = document.getElementById('allMessagesSection');
-        const inboxSection = document.getElementById('inboxSection');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const conversationItems = document.querySelectorAll('.conversation-item');
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
                 
-                // Add active class to clicked tab
+                // Add active class to clicked button
                 this.classList.add('active');
 
-                // Get the tab type
-                const tabType = this.getAttribute('data-tab');
+                // Get the filter type
+                const filterType = this.getAttribute('data-filter');
 
-                // Show/hide sections based on tab
-                if (tabType === 'all') {
-                    // Show Pinned and All Messages sections
-                    pinnedSection.style.display = 'block';
-                    allMessagesSection.style.display = 'block';
-                    inboxSection.style.display = 'none';
-                } else if (tabType === 'inbox') {
-                    // Show only Inbox section
-                    pinnedSection.style.display = 'none';
-                    allMessagesSection.style.display = 'none';
-                    inboxSection.style.display = 'block';
-                }
+                // Filter conversations based on selected filter
+                conversationItems.forEach(item => {
+                    const categories = item.getAttribute('data-category');
+                    
+                    if (categories && categories.includes(filterType)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
             });
         });
     }
@@ -218,12 +215,22 @@
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             const conversationItems = document.querySelectorAll('.conversation-item');
+            const activeFilter = document.querySelector('.filter-btn.active');
+            const currentFilter = activeFilter ? activeFilter.getAttribute('data-filter') : 'all';
 
             conversationItems.forEach(item => {
                 const userName = item.getAttribute('data-user').toLowerCase();
                 const preview = item.querySelector('.conversation-preview').textContent.toLowerCase();
+                const categories = item.getAttribute('data-category');
 
-                if (userName.includes(searchTerm) || preview.includes(searchTerm)) {
+                // Check if item matches search term
+                const matchesSearch = userName.includes(searchTerm) || preview.includes(searchTerm);
+                
+                // Check if item matches current filter
+                const matchesFilter = categories && categories.includes(currentFilter);
+
+                // Show item only if it matches both search and filter
+                if (matchesSearch && matchesFilter) {
                     item.style.display = 'flex';
                 } else {
                     item.style.display = 'none';
@@ -266,6 +273,160 @@
                 }
             });
         });
+    }
+
+    // Check for New Conversation from Schedule Page
+    function checkForNewConversation() {
+        const passengerData = sessionStorage.getItem('contactPassenger');
+        
+        if (passengerData) {
+            try {
+                const passenger = JSON.parse(passengerData);
+                
+                // Check if conversation already exists
+                const conversationList = document.getElementById('conversationList');
+                if (!conversationList) return;
+                
+                const existingConversation = Array.from(conversationList.querySelectorAll('.conversation-item'))
+                    .find(item => item.getAttribute('data-user') === passenger.name);
+                
+                if (existingConversation) {
+                    // If conversation exists, just activate it
+                    activateConversation(existingConversation, passenger.name);
+                } else {
+                    // Create new conversation
+                    createNewConversation(passenger);
+                }
+                
+                // Clear the session storage
+                sessionStorage.removeItem('contactPassenger');
+                
+            } catch (e) {
+                console.error('Error parsing passenger data:', e);
+                sessionStorage.removeItem('contactPassenger');
+            }
+        }
+    }
+
+    // Create New Conversation
+    function createNewConversation(passenger) {
+        const conversationList = document.getElementById('conversationList');
+        if (!conversationList) return;
+        
+        // Get initials for avatar
+        const initials = passenger.name.split(' ').map(n => n[0]).join('');
+        
+        // Generate random color for avatar
+        const colors = ['#4285F4', '#34A853', '#FBBC04', '#EA4335', '#9C27B0', '#FF5722', '#009688', '#795548'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        // Get current time
+        const currentTime = new Date().toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit',
+            hour12: false
+        });
+        
+        // Create new conversation item
+        const conversationItem = document.createElement('div');
+        conversationItem.className = 'conversation-item active';
+        conversationItem.setAttribute('data-user', passenger.name);
+        conversationItem.setAttribute('data-time', currentTime);
+        conversationItem.setAttribute('data-category', 'all inbox');
+        
+        conversationItem.innerHTML = `
+            <div class="conversation-avatar" style="background-color: ${randomColor};">
+                <span style="color: #ffffff;">${initials}</span>
+                <span class="online-indicator"></span>
+            </div>
+            <div class="conversation-info">
+                <div class="conversation-header">
+                    <span class="conversation-name">${passenger.name}</span>
+                    <span class="conversation-time">${currentTime}</span>
+                </div>
+                <div class="conversation-preview">Booking ID: ${passenger.bookingId} - ${passenger.phone}</div>
+            </div>
+        `;
+        
+        // Remove active class from all existing conversations
+        conversationList.querySelectorAll('.conversation-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Insert at the top of the list
+        conversationList.insertBefore(conversationItem, conversationList.firstChild);
+        
+        // Add click event listener to new conversation
+        conversationItem.addEventListener('click', function() {
+            conversationList.querySelectorAll('.conversation-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            updateChatHeader(passenger.name);
+            scrollToBottom();
+        });
+        
+        // Update chat header with new conversation
+        updateChatHeader(passenger.name);
+        
+        // Add initial message to chat
+        addInitialMessage(passenger);
+        
+        // Scroll to bottom
+        scrollToBottom();
+    }
+
+    // Activate Existing Conversation
+    function activateConversation(conversationItem, userName) {
+        const conversationList = document.getElementById('conversationList');
+        
+        // Remove active class from all conversations
+        conversationList.querySelectorAll('.conversation-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Add active class to the conversation
+        conversationItem.classList.add('active');
+        
+        // Move conversation to top
+        conversationList.insertBefore(conversationItem, conversationList.firstChild);
+        
+        // Update chat header
+        updateChatHeader(userName);
+        
+        // Scroll to bottom
+        scrollToBottom();
+    }
+
+    // Add Initial Message to Chat
+    function addInitialMessage(passenger) {
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages) return;
+        
+        // Clear existing messages (optional - or you could keep them)
+        chatMessages.innerHTML = '';
+        
+        // Add system message
+        const systemMessage = document.createElement('div');
+        systemMessage.className = 'message-wrapper system-message';
+        systemMessage.style.textAlign = 'center';
+        systemMessage.style.padding = '10px';
+        systemMessage.style.color = '#666';
+        systemMessage.style.fontSize = '13px';
+        
+        const currentDate = new Date().toLocaleDateString('en-US', { 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
+        
+        systemMessage.innerHTML = `
+            <div style="background: #f0f0f0; padding: 8px 12px; border-radius: 12px; display: inline-block;">
+                <p style="margin: 0;">Conversation started with <strong>${passenger.name}</strong></p>
+                <p style="margin: 5px 0 0 0; font-size: 11px;">Booking ID: ${passenger.bookingId} • Phone: ${passenger.phone}</p>
+                <p style="margin: 5px 0 0 0; font-size: 11px; color: #888;">${currentDate}</p>
+            </div>
+        `;
+        
+        chatMessages.appendChild(systemMessage);
     }
 
 })();

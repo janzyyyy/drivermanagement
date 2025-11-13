@@ -85,32 +85,35 @@
                     </button>
                 </div>
 
-                <!-- Tab Filters -->
-                <div class="message-tabs">
-                    <button class="message-tab active" data-tab="all">All</button>
-                    <button class="message-tab" data-tab="inbox">Inbox</button>
-                </div>
-
                 <!-- Search Bar -->
                 <div class="message-search">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" placeholder="Search" id="messageSearchInput">
                 </div>
 
-                <!-- Pinned Section (for All tab) -->
-                <div class="conversation-section" id="pinnedSection">
-                    <div class="section-label">Pinned</div>
-                    <div class="conversation-item" data-user="Juan Dela Cruz" data-time="09:21">
+                <!-- Filter Tabs -->
+                <div class="message-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="pinned">Pinned</button>
+                    <button class="filter-btn" data-filter="inbox">Inbox</button>
+                </div>
+
+                <!-- Conversations List (Scrollable) -->
+                <div class="conversation-section" id="conversationList">
+                    <!-- Active Conversation -->
+                    <div class="conversation-item active" data-user="Juan Dela Cruz" data-time="13:35" data-category="all inbox">
                         <div class="conversation-avatar">JD</div>
                         <div class="conversation-info">
                             <div class="conversation-header">
                                 <span class="conversation-name">Juan Dela Cruz</span>
-                                <span class="conversation-time">09:21</span>
+                                <span class="conversation-time">13:35</span>
                             </div>
-                            <div class="conversation-preview">Hi! I have a bookin...</div>
+                            <div class="conversation-preview">Hi! I have a booking...</div>
                         </div>
                     </div>
-                    <div class="conversation-item" data-user="Lebron James" data-time="04:21">
+
+                    <!-- Pinned Conversations -->
+                    <div class="conversation-item" data-user="Lebron James" data-time="12:15" data-category="all pinned inbox">
                         <div class="conversation-avatar" style="background-color: #c8e6c9;">
                             <span style="color: #2e7d32;">LJ</span>
                             <span class="online-indicator"></span>
@@ -118,105 +121,114 @@
                         <div class="conversation-info">
                             <div class="conversation-header">
                                 <span class="conversation-name">Lebron James</span>
-                                <span class="conversation-time">04:21</span>
+                                <span class="conversation-time">12:15</span>
                             </div>
-                            <div class="conversation-preview">Hi!</div>
+                            <div class="conversation-preview">Hi! I'm ready for the trip</div>
                         </div>
                     </div>
-                </div>
 
-                <!-- All Messages Section -->
-                <div class="conversation-section" id="allMessagesSection">
-                    <div class="section-label">All messages</div>
-                    <div class="conversation-item" data-user="Tom Davis" data-time="16:33">
-                        <div class="conversation-avatar" style="background-color: #d7ccc8;">
-                            <span style="color: #4e342e;">TV</span>
+                    <div class="conversation-item" data-user="Maria Santos" data-time="11:46" data-category="all pinned">
+                        <div class="conversation-avatar" style="background-color: #8e44ad;">
+                            <span style="color: #ffffff;">MS</span>
                         </div>
                         <div class="conversation-info">
                             <div class="conversation-header">
-                                <span class="conversation-name">Tom Davis</span>
-                                <span class="conversation-time">16:33</span>
-                            </div>
-                            <div class="conversation-preview">Tell me about the ...</div>
-                        </div>
-                    </div>
-                    <div class="conversation-item active" data-user="Juan Dela Cruz" data-time="13:35">
-                        <div class="conversation-avatar">JD</div>
-                        <div class="conversation-info">
-                            <div class="conversation-header">
-                                <span class="conversation-name">Juan Dela Cruz</span>
-                                <span class="conversation-time">13:35</span>
-                            </div>
-                            <div class="conversation-preview">Hi! I have a booking ...</div>
-                        </div>
-                    </div>
-                    <div class="conversation-item" data-user="Juan Dela Cruz" data-time="11:46">
-                        <div class="conversation-avatar">JD</div>
-                        <div class="conversation-info">
-                            <div class="conversation-header">
-                                <span class="conversation-name">Juan Dela Cruz</span>
+                                <span class="conversation-name">Maria Santos</span>
                                 <span class="conversation-time">11:46</span>
                             </div>
-                            <div class="conversation-preview">Hi! I have a booking...</div>
+                            <div class="conversation-preview">Thank you for the ride!</div>
                         </div>
                     </div>
-                    <div class="conversation-item" data-user="Juan Dela Cruz" data-time="10:01">
-                        <div class="conversation-avatar">JD</div>
-                        <div class="conversation-info">
-                            <div class="conversation-header">
-                                <span class="conversation-name">Juan Dela Cruz</span>
-                                <span class="conversation-time">10:01</span>
-                            </div>
-                            <div class="conversation-preview">Hi! I have a booking...</div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Inbox Section (hidden by default) -->
-                <div class="conversation-section" id="inboxSection" style="display: none;">
-                    <div class="section-label">Inbox</div>
-                    <div class="conversation-item active" data-user="Juan Dela Cruz" data-time="09:21">
-                        <div class="conversation-avatar">JD</div>
-                        <div class="conversation-info">
-                            <div class="conversation-header">
-                                <span class="conversation-name">Juan Dela Cruz</span>
-                                <span class="conversation-time">09:21</span>
-                            </div>
-                            <div class="conversation-preview">Hi! I have a bookin...</div>
-                        </div>
-                    </div>
-                    <div class="conversation-item" data-user="Lebron James" data-time="04:21">
-                        <div class="conversation-avatar" style="background-color: #c8e6c9;">
-                            <span style="color: #2e7d32;">LJ</span>
-                        </div>
-                        <div class="conversation-info">
-                            <div class="conversation-header">
-                                <span class="conversation-name">Lebron James</span>
-                                <span class="conversation-time">04:21</span>
-                            </div>
-                            <div class="conversation-preview">Hi!</div>
-                        </div>
-                    </div>
-                    <div class="conversation-item" data-user="Tom Davis" data-time="16:33">
+                    <!-- Regular Conversations -->
+                    <div class="conversation-item" data-user="Tom Davis" data-time="10:33" data-category="all inbox">
                         <div class="conversation-avatar" style="background-color: #d7ccc8;">
-                            <span style="color: #4e342e;">TV</span>
+                            <span style="color: #4e342e;">TD</span>
                         </div>
                         <div class="conversation-info">
                             <div class="conversation-header">
                                 <span class="conversation-name">Tom Davis</span>
-                                <span class="conversation-time">16:33</span>
+                                <span class="conversation-time">10:33</span>
                             </div>
-                            <div class="conversation-preview">Tell me about the ...</div>
+                            <div class="conversation-preview">Tell me about the...</div>
                         </div>
                     </div>
-                    <div class="conversation-item" data-user="Juan Dela Cruz" data-time="13:35">
-                        <div class="conversation-avatar">JD</div>
+
+                    <div class="conversation-item" data-user="Pedro Reyes" data-time="10:01" data-category="all">
+                        <div class="conversation-avatar" style="background-color: #e67e22;">
+                            <span style="color: #ffffff;">PR</span>
+                        </div>
                         <div class="conversation-info">
                             <div class="conversation-header">
-                                <span class="conversation-name">Juan Dela Cruz</span>
-                                <span class="conversation-time">13:35</span>
+                                <span class="conversation-name">Pedro Reyes</span>
+                                <span class="conversation-time">10:01</span>
                             </div>
-                            <div class="conversation-preview">Hi! I have a booking ...</div>
+                            <div class="conversation-preview">Are you available?</div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-item" data-user="Anna Cruz" data-time="09:45" data-category="all">
+                        <div class="conversation-avatar" style="background-color: #e91e63;">
+                            <span style="color: #ffffff;">AC</span>
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-header">
+                                <span class="conversation-name">Anna Cruz</span>
+                                <span class="conversation-time">09:45</span>
+                            </div>
+                            <div class="conversation-preview">See you at the pickup point</div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-item" data-user="Carlos Mendez" data-time="09:20" data-category="all inbox">
+                        <div class="conversation-avatar" style="background-color: #00acc1;">
+                            <span style="color: #ffffff;">CM</span>
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-header">
+                                <span class="conversation-name">Carlos Mendez</span>
+                                <span class="conversation-time">09:20</span>
+                            </div>
+                            <div class="conversation-preview">Running 5 minutes late</div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-item" data-user="Lisa Tan" data-time="08:55" data-category="all">
+                        <div class="conversation-avatar" style="background-color: #ff9800;">
+                            <span style="color: #ffffff;">LT</span>
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-header">
+                                <span class="conversation-name">Lisa Tan</span>
+                                <span class="conversation-time">08:55</span>
+                            </div>
+                            <div class="conversation-preview">Thanks for the safe ride!</div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-item" data-user="Mike Johnson" data-time="08:30" data-category="all">
+                        <div class="conversation-avatar" style="background-color: #607d8b;">
+                            <span style="color: #ffffff;">MJ</span>
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-header">
+                                <span class="conversation-name">Mike Johnson</span>
+                                <span class="conversation-time">08:30</span>
+                            </div>
+                            <div class="conversation-preview">Can you pick me up earlier?</div>
+                        </div>
+                    </div>
+
+                    <div class="conversation-item" data-user="Sofia Garcia" data-time="Yesterday" data-category="all">
+                        <div class="conversation-avatar" style="background-color: #9c27b0;">
+                            <span style="color: #ffffff;">SG</span>
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-header">
+                                <span class="conversation-name">Sofia Garcia</span>
+                                <span class="conversation-time">Yesterday</span>
+                            </div>
+                            <div class="conversation-preview">Great service! Will book again</div>
                         </div>
                     </div>
                 </div>
@@ -321,14 +333,16 @@
     <div class="modal" id="logoutModal">
         <div class="modal-overlay"></div>
         <div class="modal-content logout-modal-content">
-            <button class="modal-close-btn" id="closeLogoutModal">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
             <div class="logout-modal-body">
-                <h3 class="logout-modal-title">Confirm Action</h3>
-                <p class="logout-modal-text">Are you sure you want to leave?</p>
+                <div class="logout-modal-header">
+                    <h3 class="logout-modal-title">Confirm Logout</h3>
+                    <p class="logout-modal-text">Are you sure you want to leave?</p>
+                </div>
                 <div class="logout-modal-actions">
-                    <button class="btn-logout-confirm" id="confirmLogout">Confirm</button>
+                    <button class="btn-logout-confirm" id="confirmLogout">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Yes, Log Out
+                    </button>
                     <button class="btn-logout-cancel" id="cancelLogout">Cancel</button>
                 </div>
             </div>

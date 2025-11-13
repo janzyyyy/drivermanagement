@@ -249,7 +249,9 @@
                 <div class="booking-card ongoing-card">
                     <div class="ongoing-header">
                         <div class="ongoing-passenger">
-                            <i class="fa-solid fa-user"></i>
+                            <div class="passenger-avatar">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
                             <div class="passenger-info">
                                 <span class="passenger-name">Lebron James</span>
                                 <span class="booking-id">Booking ID: ARK-2025-002</span>
@@ -277,17 +279,19 @@
                     </div>
                 </div>
 
-                <!-- Ongoing Booking Card 2 - Rejected -->
+                <!-- Ongoing Booking Card 2 - Accepted -->
                 <div class="booking-card ongoing-card">
                     <div class="ongoing-header">
                         <div class="ongoing-passenger">
-                            <i class="fa-solid fa-user"></i>
+                            <div class="passenger-avatar">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
                             <div class="passenger-info">
                                 <span class="passenger-name">Lebron James</span>
-                                <span class="booking-id">Booking ID: BRK-2025-002</span>
+                                <span class="booking-id">Booking ID: ARK-2025-002</span>
                             </div>
                         </div>
-                        <span class="status-badge status-rejected">Rejected</span>
+                        <span class="status-badge status-accepted">Accepted</span>
                     </div>
                     <div class="booking-route">
                         <div class="route-item">
@@ -313,7 +317,9 @@
                 <div class="booking-card ongoing-card">
                     <div class="ongoing-header">
                         <div class="ongoing-passenger">
-                            <i class="fa-solid fa-user"></i>
+                            <div class="passenger-avatar">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
                             <div class="passenger-info">
                                 <span class="passenger-name">Lebron James</span>
                                 <span class="booking-id">Booking ID: ARK-2025-002</span>
@@ -645,14 +651,16 @@
     <div class="modal" id="logoutModal">
         <div class="modal-overlay"></div>
         <div class="modal-content logout-modal-content">
-            <button class="modal-close-btn" id="closeLogoutModal">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
             <div class="logout-modal-body">
-                <h3 class="logout-modal-title">Confirm Action</h3>
-                <p class="logout-modal-text">Are you sure you want to leave?</p>
+                <div class="logout-modal-header">
+                    <h3 class="logout-modal-title">Confirm Logout</h3>
+                    <p class="logout-modal-text">Are you sure you want to leave?</p>
+                </div>
                 <div class="logout-modal-actions">
-                    <button class="btn-logout-confirm" id="confirmLogout">Confirm</button>
+                    <button class="btn-logout-confirm" id="confirmLogout">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Yes, Log Out
+                    </button>
                     <button class="btn-logout-cancel" id="cancelLogout">Cancel</button>
                 </div>
             </div>

@@ -247,6 +247,15 @@ body {
     margin-left: 0;
 }
 
+/* Messages Page Specific - Remove padding for full screen fit */
+body[data-page="messages"] .main-content {
+    padding: 0;
+    overflow: hidden;
+    height: calc(100vh - 65px);
+    min-height: calc(100vh - 65px);
+    max-height: calc(100vh - 65px);
+}
+
 .dashboard-header {
     display: flex;
     justify-content: space-between;
@@ -536,20 +545,21 @@ input:checked + .toggle-slider:before {
 }
 
 /* Modal */
+/* ========================================
+   MODAL SYSTEM
+   ======================================== */
+
 .modal {
     display: none;
     position: fixed;
-    z-index: 2000;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    z-index: 2000;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 100px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 20px;
+    padding: 80px 20px 20px 20px;
 }
 
 .modal.show {
@@ -570,77 +580,54 @@ input:checked + .toggle-slider:before {
 .modal-content.logout-modal-content {
     background-color: #ffffff;
     border-radius: 12px;
-    max-width: 380px;
-    width: 90%;
+    max-width: 340px;
+    width: 100%;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
     position: relative;
     z-index: 2001;
-    animation: modalSlideIn 0.25s ease-out;
-    padding: 28px 32px;
-    overflow: visible;
+    animation: modalSlideDown 0.3s ease-out;
+    padding: 0;
+    overflow: hidden;
 }
 
-@keyframes modalSlideIn {
+@keyframes modalSlideDown {
     from {
         opacity: 0;
-        transform: translateY(-30px) scale(0.96);
+        transform: translateY(-30px);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
     }
-}
-
-.modal-close-btn {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    color: #6c757d;
-    font-size: 20px;
-    padding: 0;
-    z-index: 1;
-}
-
-.modal-close-btn:hover {
-    background-color: #f1f3f5;
-    color: #212529;
-}
-
-.modal-close-btn:active {
-    background-color: #e9ecef;
-    transform: scale(0.95);
 }
 
 .logout-modal-body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 0;
     padding: 0;
 }
 
-.logout-modal-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #212529;
-    margin: 0;
+.logout-modal-header {
+    background-color: #3F562C;
+    padding: 20px 24px;
+    width: 100%;
     text-align: center;
-    line-height: 1.2;
+}
+
+.logout-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 5px 0;
+    text-align: center;
+    line-height: 1.3;
 }
 
 .logout-modal-text {
-    font-size: 15px;
-    color: #6c757d;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
     margin: 0;
     text-align: center;
     line-height: 1.4;
@@ -648,57 +635,64 @@ input:checked + .toggle-slider:before {
 
 .logout-modal-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
-    margin-top: 8px;
+    padding: 20px 24px;
 }
 
 .btn-logout-confirm,
 .btn-logout-cancel {
-    padding: 12px 24px;
+    padding: 11px 20px;
     border: none;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     flex: 1;
     font-family: inherit;
     border-radius: 8px;
 }
 
 .btn-logout-confirm {
-    background-color: #2563eb;
+    background-color: #3F562C;
     color: #ffffff;
 }
 
+.btn-logout-confirm i {
+    font-size: 15px;
+}
+
 .btn-logout-confirm:hover {
-    background-color: #1d4ed8;
+    background-color: #2d3f20;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(63, 86, 44, 0.3);
 }
 
 .btn-logout-confirm:active {
     transform: translateY(0);
-    background-color: #1e40af;
+    background-color: #243319;
 }
 
 .btn-logout-cancel {
-    background-color: #6c757d;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #495057;
+    border: 1px solid #dee2e6;
 }
 
 .btn-logout-cancel:hover {
-    background-color: #5a6268;
+    background-color: #f8f9fa;
+    border-color: #c8ccd0;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .btn-logout-cancel:active {
     transform: translateY(0);
-    background-color: #545b62;
+    background-color: #e9ecef;
 }
 
 /* Legacy modal styles for compatibility */
@@ -1006,47 +1000,40 @@ input:checked + .toggle-slider:before {
     }
     
     .modal {
-        padding-top: 80px;
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-bottom: 15px;
+        padding: 70px 16px 16px 16px;
     }
-    
+
     .modal-content.logout-modal-content {
-        max-width: 360px;
-        width: 90%;
-        padding: 24px 28px;
+        max-width: 320px;
     }
     
-    .modal-close-btn {
-        width: 30px;
-        height: 30px;
-        font-size: 18px;
-        top: 14px;
-        right: 14px;
-    }
-    
-    .logout-modal-body {
-        gap: 14px;
+    .logout-modal-header {
+        padding: 20px 24px;
     }
     
     .logout-modal-title {
         font-size: 18px;
+        margin-bottom: 5px;
     }
     
     .logout-modal-text {
-        font-size: 14px;
+        font-size: 13px;
     }
     
     .logout-modal-actions {
         gap: 10px;
-        margin-top: 6px;
+        padding: 20px 24px;
     }
     
     .btn-logout-confirm,
     .btn-logout-cancel {
         padding: 11px 20px;
         font-size: 14px;
+        gap: 6px;
+    }
+    
+    .btn-logout-confirm i {
+        font-size: 15px;
     }
 }
 
@@ -1198,46 +1185,39 @@ input:checked + .toggle-slider:before {
     }
     
     .modal {
-        padding-top: 70px;
-        padding-left: 12px;
-        padding-right: 12px;
-        padding-bottom: 12px;
+        padding: 60px 12px 12px 12px;
     }
 
     .modal-content.logout-modal-content {
-        max-width: 340px;
-        width: 92%;
-        padding: 22px 24px;
+        max-width: 300px;
     }
 
-    .modal-close-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 17px;
-        top: 12px;
-        right: 12px;
-    }
-
-    .logout-modal-body {
-        gap: 14px;
+    .logout-modal-header {
+        padding: 18px 20px;
     }
 
     .logout-modal-title {
-        font-size: 18px;
+        font-size: 17px;
+        margin-bottom: 4px;
     }
 
     .logout-modal-text {
-        font-size: 14px;
+        font-size: 12px;
     }
 
     .logout-modal-actions {
-        gap: 10px;
-        margin-top: 6px;
+        gap: 8px;
+        padding: 18px 20px;
     }
 
     .btn-logout-confirm,
     .btn-logout-cancel {
-        padding: 11px 20px;
+        padding: 10px 16px;
+        font-size: 13px;
+        gap: 6px;
+    }
+    
+    .btn-logout-confirm i {
         font-size: 14px;
     }
     
@@ -1318,44 +1298,41 @@ input:checked + .toggle-slider:before {
     }
 
     .modal {
-        padding-top: 60px;
-        padding-left: 10px;
-        padding-right: 10px;
-        padding-bottom: 10px;
+        padding: 50px 10px 10px 10px;
     }
 
     .modal-content.logout-modal-content {
-        max-width: 320px;
-        width: 94%;
-        padding: 20px 22px;
+        max-width: 280px;
     }
 
-    .modal-close-btn {
-        width: 26px;
-        height: 26px;
-        font-size: 16px;
-        top: 10px;
-        right: 10px;
-    }
-
-    .logout-modal-body {
-        gap: 12px;
+    .logout-modal-header {
+        padding: 16px 18px;
     }
 
     .logout-modal-title {
-        font-size: 17px;
+        font-size: 16px;
+        margin-bottom: 4px;
     }
 
     .logout-modal-text {
-        font-size: 13px;
+        font-size: 11px;
     }
 
     .logout-modal-actions {
         gap: 8px;
-        margin-top: 4px;
+        padding: 16px 18px;
     }
 
     .btn-logout-confirm,
+    .btn-logout-cancel {
+        padding: 9px 14px;
+        font-size: 12px;
+        gap: 5px;
+    }
+    
+    .btn-logout-confirm i {
+        font-size: 13px;
+    }
     .btn-logout-cancel {
         padding: 10px 18px;
         font-size: 13px;

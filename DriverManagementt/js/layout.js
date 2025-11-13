@@ -21,6 +21,9 @@
     const cancelLogout = document.getElementById('cancelLogout');
     const modalOverlay = logoutModal ? logoutModal.querySelector('.modal-overlay') : null;
     
+    // User avatar
+    const userAvatar = document.querySelector('.user-avatar');
+    
     // Create sidebar overlay for mobile
     let sidebarOverlay = document.getElementById('sidebarOverlay');
     if (!sidebarOverlay) {
@@ -101,6 +104,16 @@
             } else {
                 item.classList.remove('active');
             }
+        });
+    }
+
+    // ========================================
+    // User Avatar Click - Redirect to Profile
+    // ========================================
+    if (userAvatar) {
+        userAvatar.style.cursor = 'pointer';
+        userAvatar.addEventListener('click', () => {
+            window.location.href = 'profile.html';
         });
     }
 
