@@ -3,104 +3,134 @@
     'use strict';
 
     // Modal elements
-    const rideConfirmedModal = document.getElementById('rideConfirmedModal');
-    const bookingDetailsModal = document.getElementById('bookingDetailsModal');
-    const confirmArrivalModal = document.getElementById('confirmArrivalModal');
+    let bookingDetailsModal = null;
+    let confirmArrivalModal = null;
+    let confirmDropOffModal = null;
 
     // Current booking data
     let currentBookingData = null;
+    let currentOngoingBookingData = null;
+    let tripState = 'accepted'; // 'accepted', 'arrived', 'completed'
+    
+    // Booking map variables
     let map = null;
     let pickupMarker = null;
     let dropoffMarker = null;
     let routeLine = null;
+    
+    // Ongoing map variables
+    let ongoingBookingModal = null;
+    let ongoingMap = null;
+    let ongoingPickupMarker = null;
+    let ongoingDropoffMarker = null;
+    let ongoingRouteLine = null;
+    let ongoingCarMarker = null;
 
     // Initialize when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        initBookingAcceptance();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    function init() {
+        bookingDetailsModal = document.getElementById('bookingDetailsModal');
+        confirmArrivalModal = document.getElementById('confirmArrivalModal');
+        confirmDropOffModal = document.getElementById('confirmDropOffModal');
+        ongoingBookingModal = document.getElementById('ongoingBookingModal');
+        
+        initViewDetailsButtons();
         initModalControls();
         initOngoingViewButtons();
-    });
+    }
 
-    // Initialize booking acceptance buttons
-    function initBookingAcceptance() {
-        const acceptButtons = document.querySelectorAll('.btn-accept');
+    // Helper function to extract booking data from card
+    function extractBookingDataFromCard(card) {
+        const data = {
+            id: card.dataset.id || card.dataset.bookingId,
+            passenger: card.dataset.passenger,
+            phone: card.dataset.phone,
+            pickup: card.dataset.pickup,
+            pickupLat: parseFloat(card.dataset.pickupLat),
+            pickupLng: parseFloat(card.dataset.pickupLng),
+            dropoff: card.dataset.dropoff,
+            dropoffLat: parseFloat(card.dataset.dropoffLat),
+            dropoffLng: parseFloat(card.dataset.dropoffLng),
+            distance: card.dataset.distance,
+            time: card.dataset.time,
+            datetime: card.dataset.datetime,
+            payment: card.dataset.payment,
+            fare: card.dataset.fare
+        };
         
-        acceptButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Store booking data from button attributes
-                currentBookingData = {
-                    id: this.dataset.id,
-                    passenger: this.dataset.passenger,
-                    phone: this.dataset.phone,
-                    pickup: this.dataset.pickup,
-                    pickupLat: parseFloat(this.dataset.pickupLat),
-                    pickupLng: parseFloat(this.dataset.pickupLng),
-                    dropoff: this.dataset.dropoff,
-                    dropoffLat: parseFloat(this.dataset.dropoffLat),
-                    dropoffLng: parseFloat(this.dataset.dropoffLng),
-                    distance: this.dataset.distance,
-                    time: this.dataset.time,
-                    datetime: this.dataset.datetime,
-                    payment: this.dataset.payment,
-                    fare: this.dataset.fare
-                };
+        const noteElement = card.querySelector('.booking-note');
+        if (noteElement) {
+            data.note = noteElement.textContent.trim().replace(/^\s*\S+\s*/, '');
+        }
+        
+        return data;
+    }
 
-                // Show Ride Confirmed modal
-                showRideConfirmedModal();
+    // Initialize View Details buttons for booking cards
+    function initViewDetailsButtons() {
+        const viewButtons = document.querySelectorAll('#bookings-tab .btn-view-details');
+        
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const card = this.closest('.booking-card');
+                
+                if (!card) return;
+                
+                currentBookingData = extractBookingDataFromCard(card);
+                showBookingDetailsModal();
             });
         });
     }
 
     // Initialize modal control buttons
     function initModalControls() {
-        // Ride Confirmed Modal
-        document.getElementById('closeRideConfirmed')?.addEventListener('click', closeRideConfirmedModal);
-        document.getElementById('proceedToDetails')?.addEventListener('click', proceedToBookingDetails);
-        document.getElementById('cancelRideConfirmed')?.addEventListener('click', closeRideConfirmedModal);
-
-        // Booking Details Modal
+        // Booking Details Modal (for new bookings)
         document.getElementById('closeBookingDetails')?.addEventListener('click', closeBookingDetailsModal);
-        document.getElementById('arrivedAtPickupBtn')?.addEventListener('click', showConfirmArrivalModal);
+        document.getElementById('acceptBookingBtn')?.addEventListener('click', acceptBooking);
         document.getElementById('cancelBookingBtn')?.addEventListener('click', cancelBooking);
         document.getElementById('contactPassengerBtn')?.addEventListener('click', contactPassenger);
+
+        // Ongoing Booking Details Modal
+        document.getElementById('closeOngoingBooking')?.addEventListener('click', closeOngoingBookingModal);
+        document.getElementById('arrivedAtPickupBtn')?.addEventListener('click', showConfirmArrivalModal);
+        document.getElementById('contactOngoingPassengerBtn')?.addEventListener('click', contactPassenger);
 
         // Confirm Arrival Modal
         document.getElementById('closeConfirmArrival')?.addEventListener('click', closeConfirmArrivalModal);
         document.getElementById('cancelArrivalBtn')?.addEventListener('click', closeConfirmArrivalModal);
         document.getElementById('confirmArrivalBtn')?.addEventListener('click', confirmArrival);
 
-        // Ongoing Modal
-        document.getElementById('closeOngoingBooking')?.addEventListener('click', closeOngoingBookingModal);
-        document.getElementById('ongoingAcceptBtn')?.addEventListener('click', acceptOngoingBooking);
-        document.getElementById('ongoingCancelBtn')?.addEventListener('click', cancelOngoingBooking);
-        document.getElementById('contactOngoingPassengerBtn')?.addEventListener('click', contactPassenger);
+        // Confirm Drop Off Modal
+        document.getElementById('closeConfirmDropOff')?.addEventListener('click', closeConfirmDropOffModal);
+        document.getElementById('cancelDropOffBtn')?.addEventListener('click', closeConfirmDropOffModal);
+        document.getElementById('confirmDropOffBtn')?.addEventListener('click', completeDropOff);
 
         // Close on overlay click
-        rideConfirmedModal?.querySelector('.modal-overlay')?.addEventListener('click', closeRideConfirmedModal);
         bookingDetailsModal?.querySelector('.modal-overlay')?.addEventListener('click', closeBookingDetailsModal);
         confirmArrivalModal?.querySelector('.modal-overlay')?.addEventListener('click', closeConfirmArrivalModal);
+        confirmDropOffModal?.querySelector('.modal-overlay')?.addEventListener('click', closeConfirmDropOffModal);
     }
 
-    // Show Ride Confirmed Modal
-    function showRideConfirmedModal() {
-        rideConfirmedModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeRideConfirmedModal() {
-        rideConfirmedModal.classList.remove('show');
-        document.body.style.overflow = '';
-    }
-
-    // Proceed to Booking Details
-    function proceedToBookingDetails() {
-        closeRideConfirmedModal();
+    // Accept Booking - Move to Ongoing
+    function acceptBooking() {
+        if (!currentBookingData) return;
+        
+        // Close booking details modal
+        closeBookingDetailsModal();
         
         // Move booking to Ongoing tab
         moveBookingToOngoing(currentBookingData);
         
+        // Show success message
         setTimeout(() => {
-            showBookingDetailsModal();
+            alert('Booking accepted! You can view it in the Ongoing tab.');
         }, 300);
     }
     
@@ -111,13 +141,8 @@
         // Find and remove the booking card from Bookings tab
         const bookingCards = document.querySelectorAll('#bookings-tab .booking-card');
         bookingCards.forEach(card => {
-            const acceptBtn = card.querySelector('.btn-accept');
-            if (acceptBtn && acceptBtn.dataset.id === bookingData.id) {
-                // Store booking note if exists
-                const noteElement = card.querySelector('.booking-note');
-                const note = noteElement ? noteElement.textContent.trim() : '';
-                bookingData.note = note;
-                
+            if (card.dataset.id === bookingData.id) {
+                // Note is already stored in bookingData from card click
                 // Remove from Bookings tab
                 card.remove();
             }
@@ -188,8 +213,9 @@
         
         // Add click event to the new View Details button
         const viewBtn = card.querySelector('.btn-view-details');
-        viewBtn.addEventListener('click', function() {
-            showOngoingBookingDetails(card);
+        viewBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            showOngoingBookingModal(extractBookingDataFromCard(card));
         });
         
         return card;
@@ -215,10 +241,14 @@
 
     // Show Booking Details Modal with Map
     function showBookingDetailsModal() {
-        if (!currentBookingData) return;
+        if (!currentBookingData || !bookingDetailsModal) return;
 
         // Populate modal with booking data
-        document.querySelector('.booking-id').textContent = `ID: ${currentBookingData.id}`;
+        const bookingIdElement = bookingDetailsModal.querySelector('.booking-id');
+        if (bookingIdElement) {
+            bookingIdElement.textContent = `ID: ${currentBookingData.id}`;
+        }
+        
         document.getElementById('passengerName').textContent = currentBookingData.passenger;
         document.getElementById('passengerPhone').textContent = currentBookingData.phone;
         document.getElementById('pickupLocation').textContent = currentBookingData.pickup;
@@ -228,7 +258,7 @@
         document.getElementById('tripDateTime').textContent = currentBookingData.datetime;
         document.getElementById('paymentMethod').textContent = currentBookingData.payment;
         document.getElementById('totalFare').textContent = currentBookingData.fare;
-
+        
         // Show modal
         bookingDetailsModal.classList.add('show');
         document.body.style.overflow = 'hidden';
@@ -458,15 +488,29 @@
     // Confirm Arrival
     function confirmArrival() {
         closeConfirmArrivalModal();
-        closeBookingDetailsModal();
         
-        // Show success message (you can customize this)
+        // Update trip state
+        tripState = 'arrived';
+        
+        // Update the buttons in ongoing modal
+        const arrivedBtn = document.getElementById('arrivedAtPickupBtn');
+        const cancelBtn = document.getElementById('cancelOngoingBookingBtn');
+        
+        if (arrivedBtn && cancelBtn) {
+            arrivedBtn.textContent = 'En Route to Drop-off';
+            arrivedBtn.disabled = true;
+            arrivedBtn.style.opacity = '0.6';
+            arrivedBtn.style.cursor = 'not-allowed';
+            
+            cancelBtn.textContent = 'Confirm Drop Off';
+            cancelBtn.className = 'btn-arrived';
+            cancelBtn.style.display = 'block';
+            cancelBtn.onclick = confirmDropOff;
+        }
+        
+        // Show success message
         setTimeout(() => {
-            alert('Arrival confirmed! Passenger has been notified.');
-            // Here you would typically:
-            // 1. Update the booking status in the database
-            // 2. Move the booking to the "Ongoing" tab
-            // 3. Start the trip
+            alert('Arrival confirmed! Passenger has been notified. Now proceeding to drop-off location.');
         }, 300);
     }
 
@@ -509,44 +553,49 @@
         window.location.href = 'messages.html';
     }
 
-    // Accept Ongoing Booking
-    function acceptOngoingBooking() {
+    // Show Confirm Drop Off Modal
+    function confirmDropOff() {
+        confirmDropOffModal.classList.add('show');
+    }
+
+    function closeConfirmDropOffModal() {
+        confirmDropOffModal.classList.remove('show');
+    }
+
+    // Complete Drop Off - Complete the trip
+    function completeDropOff() {
+        closeConfirmDropOffModal();
         closeOngoingBookingModal();
+        
+        // Find and remove the ongoing card
+        if (currentOngoingBookingData) {
+            const ongoingCards = document.querySelectorAll('#ongoing-tab .booking-card');
+            ongoingCards.forEach(card => {
+                if (card.dataset.bookingId === currentOngoingBookingData.id) {
+                    card.remove();
+                }
+            });
+        }
+        
+        // Reset trip state
+        tripState = 'accepted';
+        currentOngoingBookingData = null;
         
         // Show success message
         setTimeout(() => {
-            alert('Booking accepted! You can now proceed with the ride.');
-            // Here you would typically:
-            // 1. Update booking status to "accepted" in the database
-            // 2. Notify the passenger
-            // 3. Enable navigation/tracking features
+            alert('Trip completed successfully! Payment has been recorded.');
         }, 300);
-    }
-
-    // Cancel Ongoing Booking
-    function cancelOngoingBooking() {
-        if (confirm('Are you sure you want to cancel this ongoing booking?')) {
-            closeOngoingBookingModal();
-            currentBookingData = null;
-            
-            // Here you would typically:
-            // 1. Send cancellation to the backend
-            // 2. Update booking status
-            // 3. Notify the passenger
-        }
+        
+        // Here you would typically:
+        // 1. Send completion to the backend
+        // 2. Process payment
+        // 3. Update earnings
+        // 4. Move to trip history
     }
 
     // ========================================
     // ONGOING BOOKING MODAL
     // ========================================
-
-    const ongoingBookingModal = document.getElementById('ongoingBookingModal');
-    let ongoingMap = null;
-    let ongoingPickupMarker = null;
-    let ongoingDropoffMarker = null;
-    let ongoingRouteLine = null;
-    let ongoingCarMarker = null;
-    let currentOngoingBookingData = null;
 
     // Initialize View Details buttons for ongoing bookings (using event delegation for dynamically created cards)
     function initOngoingViewButtons() {
@@ -562,40 +611,16 @@
                 const card = button.closest('.booking-card');
                 if (!card) return;
                 
-                // Extract data from card's data attributes (for dynamically created cards)
-                const bookingData = {
-                    id: card.dataset.bookingId || '3131',
-                    passenger: card.dataset.passenger || 'Juan Dela Cruz',
-                    phone: card.dataset.phone || '09434325223',
-                    pickup: card.dataset.pickup || 'SM North EDSA',
-                    pickupLat: parseFloat(card.dataset.pickupLat) || 14.6560,
-                    pickupLng: parseFloat(card.dataset.pickupLng) || 121.0320,
-                    dropoff: card.dataset.dropoff || 'QC Circle',
-                    dropoffLat: parseFloat(card.dataset.dropoffLat) || 14.6488,
-                    dropoffLng: parseFloat(card.dataset.dropoffLng) || 121.0499,
-                    distance: card.dataset.distance || '4.2 km',
-                    time: card.dataset.time || '45 mins',
-                    datetime: card.dataset.datetime || 'Sept 15, 2025 • 08:30 AM',
-                    payment: card.dataset.payment || 'Cash',
-                    fare: card.dataset.fare || '₱126'
-                };
-
-                showOngoingBookingModal(bookingData);
+                showOngoingBookingModal(extractBookingDataFromCard(card));
             });
         }
-
-        // Close button
-        document.getElementById('closeOngoingBooking')?.addEventListener('click', closeOngoingBookingModal);
-        
-        // Close on overlay click
-        ongoingBookingModal?.querySelector('.modal-overlay')?.addEventListener('click', closeOngoingBookingModal);
     }
 
     function showOngoingBookingModal(bookingData) {
         if (!bookingData) return;
 
-        // Store current booking data
-        currentBookingData = bookingData;
+        // Store current ongoing booking data
+        currentOngoingBookingData = bookingData;
 
         // Populate modal with booking data (updated for new HTML structure matching booking details)
         document.getElementById('ongoingBookingId').textContent = `ID: ${bookingData.id}`;
@@ -611,6 +636,23 @@
 
         // Store current ongoing booking data for Google Maps
         currentOngoingBookingData = bookingData;
+        
+        // Reset button states (in case modal was opened before)
+        const arrivedBtn = document.getElementById('arrivedAtPickupBtn');
+        const cancelBtn = document.getElementById('cancelOngoingBookingBtn');
+        
+        if (arrivedBtn) {
+            arrivedBtn.textContent = 'Arrived at Pickup Location';
+            arrivedBtn.disabled = false;
+            arrivedBtn.style.opacity = '1';
+            arrivedBtn.style.cursor = 'pointer';
+        }
+        
+        if (cancelBtn) {
+            cancelBtn.textContent = 'Cancel Booking';
+            cancelBtn.className = 'btn-cancel-booking';
+            cancelBtn.style.display = 'none'; // Hide until arrival confirmed
+        }
 
         // Show modal
         ongoingBookingModal.classList.add('show');

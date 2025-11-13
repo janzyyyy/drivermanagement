@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule - JourneoLink Driver</title>
+    <link rel="icon" type="image/png" href="../assets/logo.png">
     <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/schedule.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -101,7 +102,21 @@
             
             <div class="bookings-grid">
                 <!-- Booking Card 1 -->
-                <div class="booking-card">
+                <div class="booking-card"
+                    data-id="3131"
+                    data-passenger="Juan Dela Cruz"
+                    data-phone="09434323233"
+                    data-pickup="SM North EDSA"
+                    data-pickup-lat="14.6564"
+                    data-pickup-lng="121.0321"
+                    data-dropoff="QC Circle"
+                    data-dropoff-lat="14.6505"
+                    data-dropoff-lng="121.0490"
+                    data-distance="4.2 km"
+                    data-time="45 mins"
+                    data-datetime="Sept 15, 2025 • 08:30 AM"
+                    data-payment="Cash"
+                    data-fare="₱126">
                     <div class="booking-header">
                         <div class="booking-distance">
                             <i class="fa-solid fa-location-arrow"></i> 1.2 Km From You
@@ -109,44 +124,44 @@
                         <span class="booking-badge badge-now">Just Now</span>
                     </div>
                     <div class="booking-passenger">
-                        <i class="fa-solid fa-user"></i> Lebron James
+                        <i class="fa-solid fa-user"></i> Juan Dela Cruz
                     </div>
                     <div class="booking-route">
                         <div class="route-item">
                             <i class="fa-solid fa-location-dot pickup-icon"></i>
-                            <span>Quezon Memorial Circle</span>
+                            <span>SM North EDSA</span>
                         </div>
                         <div class="route-line"></div>
                         <div class="route-item">
                             <i class="fa-solid fa-location-dot dropoff-icon"></i>
-                            <span>Pasig City</span>
+                            <span>QC Circle</span>
                         </div>
                     </div>
                     <div class="booking-note">
                         <i class="fa-solid fa-comment-dots"></i> Hurry, Pick me up now!
                     </div>
                     <div class="booking-footer">
-                        <span class="booking-price">₱120.00</span>
-                        <button class="btn-accept" 
-                            data-id="3131"
-                            data-passenger="Juan Dela Cruz"
-                            data-phone="09434323233"
-                            data-pickup="SM North EDSA"
-                            data-pickup-lat="14.6564"
-                            data-pickup-lng="121.0321"
-                            data-dropoff="QC Circle"
-                            data-dropoff-lat="14.6505"
-                            data-dropoff-lng="121.0490"
-                            data-distance="4.2 km"
-                            data-time="45 mins"
-                            data-datetime="Sept 15, 2025 • 08:30 AM"
-                            data-payment="Cash"
-                            data-fare="₱126">Accept</button>
+                        <span class="booking-price">₱126</span>
+                        <button class="btn-view-details">View Details</button>
                     </div>
                 </div>
 
                 <!-- Booking Card 2 -->
-                <div class="booking-card">
+                <div class="booking-card"
+                    data-id="3132"
+                    data-passenger="Maria Santos"
+                    data-phone="09123456789"
+                    data-pickup="Trinoma Mall"
+                    data-pickup-lat="14.6568"
+                    data-pickup-lng="121.0332"
+                    data-dropoff="Manila City Hall"
+                    data-dropoff-lat="14.5995"
+                    data-dropoff-lng="120.9842"
+                    data-distance="6.8 km"
+                    data-time="55 mins"
+                    data-datetime="Nov 1, 2025 • 10:00 AM"
+                    data-payment="GCash"
+                    data-fare="₱180">
                     <div class="booking-header">
                         <div class="booking-distance">
                             <i class="fa-solid fa-location-arrow"></i> 1.2 Km From You
@@ -159,39 +174,39 @@
                     <div class="booking-route">
                         <div class="route-item">
                             <i class="fa-solid fa-location-dot pickup-icon"></i>
-                            <span>Quezon Memorial Circle</span>
+                            <span>Trinoma Mall</span>
                         </div>
                         <div class="route-line"></div>
                         <div class="route-item">
                             <i class="fa-solid fa-location-dot dropoff-icon"></i>
-                            <span>Pasig City</span>
+                            <span>Manila City Hall</span>
                         </div>
                     </div>
                     <div class="booking-note">
                         <i class="fa-solid fa-comment-dots"></i> Hurry, Pick me up now!
                     </div>
                     <div class="booking-footer">
-                        <span class="booking-price">₱120.00</span>
-                        <button class="btn-accept"
-                            data-id="3132"
-                            data-passenger="Maria Santos"
-                            data-phone="09123456789"
-                            data-pickup="Trinoma Mall"
-                            data-pickup-lat="14.6568"
-                            data-pickup-lng="121.0332"
-                            data-dropoff="Manila City Hall"
-                            data-dropoff-lat="14.5995"
-                            data-dropoff-lng="120.9842"
-                            data-distance="6.8 km"
-                            data-time="55 mins"
-                            data-datetime="Nov 1, 2025 • 10:00 AM"
-                            data-payment="GCash"
-                            data-fare="₱180">Accept</button>
+                        <span class="booking-price">₱180</span>
+                        <button class="btn-view-details">View Details</button>
                     </div>
                 </div>
 
                 <!-- Booking Card 3 -->
-                <div class="booking-card">
+                <div class="booking-card"
+                    data-id="3133"
+                    data-passenger="Pedro Reyes"
+                    data-phone="09987654321"
+                    data-pickup="UP Diliman"
+                    data-pickup-lat="14.6537"
+                    data-pickup-lng="121.0685"
+                    data-dropoff="Eastwood City"
+                    data-dropoff-lat="14.6091"
+                    data-dropoff-lng="121.0794"
+                    data-distance="5.5 km"
+                    data-time="38 mins"
+                    data-datetime="Oct 28, 2025 • 02:15 PM"
+                    data-payment="Cash"
+                    data-fare="₱150">
                     <div class="booking-header">
                         <div class="booking-distance">
                             <i class="fa-solid fa-location-arrow"></i> 1.2 Km From You
@@ -216,22 +231,8 @@
                         <i class="fa-solid fa-comment-dots"></i> Hurry, Pick me up now!
                     </div>
                     <div class="booking-footer">
-                        <span class="booking-price">₱120.00</span>
-                        <button class="btn-accept"
-                            data-id="3133"
-                            data-passenger="Pedro Reyes"
-                            data-phone="09987654321"
-                            data-pickup="UP Diliman"
-                            data-pickup-lat="14.6537"
-                            data-pickup-lng="121.0685"
-                            data-dropoff="Eastwood City"
-                            data-dropoff-lat="14.6091"
-                            data-dropoff-lng="121.0794"
-                            data-distance="5.5 km"
-                            data-time="38 mins"
-                            data-datetime="Oct 28, 2025 • 02:15 PM"
-                            data-payment="Cash"
-                            data-fare="₱150">Accept</button>
+                        <span class="booking-price">₱150</span>
+                        <button class="btn-view-details">View Details</button>
                     </div>
                 </div>
             </div>
@@ -524,7 +525,7 @@
                         </div>
 
                         <div class="modal-actions-buttons">
-                            <button class="btn-arrived" id="arrivedAtPickupBtn">Arrived at Pickup Location</button>
+                            <button class="btn-arrived" id="acceptBookingBtn">Accept Booking</button>
                             <button class="btn-cancel-booking" id="cancelBookingBtn">Cancel</button>
                         </div>
                     </div>
@@ -616,8 +617,8 @@
                         </div>
 
                         <div class="modal-actions-buttons">
-                            <button class="btn-ongoing-accept" id="ongoingAcceptBtn">Accept</button>
-                            <button class="btn-ongoing-cancel" id="ongoingCancelBtn">Cancel</button>
+                            <button class="btn-arrived" id="arrivedAtPickupBtn">Arrived at Pickup Location</button>
+                            <button class="btn-cancel-booking" id="cancelOngoingBookingBtn">Cancel Booking</button>
                         </div>
                     </div>
 
@@ -643,6 +644,24 @@
             <div class="modal-footer-action">
                 <button class="btn-confirm-action" id="confirmArrivalBtn">Confirm</button>
                 <button class="btn-cancel-action" id="cancelArrivalBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Drop Off Modal -->
+    <div class="modal" id="confirmDropOffModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content confirm-action-modal">
+            <button class="modal-close-action" id="closeConfirmDropOff">✕</button>
+            <div class="modal-header-action">
+                <h3 class="modal-title-action">Confirm Action</h3>
+            </div>
+            <div class="modal-body-action">
+                <p class="modal-message-action">Confirm that passenger has been <span class="text-highlight">DROPPED OFF</span> at destination?</p>
+            </div>
+            <div class="modal-footer-action">
+                <button class="btn-confirm-action" id="confirmDropOffBtn">Confirm</button>
+                <button class="btn-cancel-action" id="cancelDropOffBtn">Cancel</button>
             </div>
         </div>
     </div>

@@ -85,7 +85,6 @@
     transform: translateY(-2px);
     border-color: #d1d5db;
 }
-
 .booking-header {
     display: flex;
     justify-content: space-between;
@@ -719,7 +718,8 @@
    CONFIRM ACTION MODAL
    ======================================== */
 
-#confirmArrivalModal .modal-content.confirm-action-modal {
+#confirmArrivalModal .modal-content.confirm-action-modal,
+#confirmDropOffModal .modal-content.confirm-action-modal {
     background-color: #ffffff !important;
     border-radius: 8px !important;
     max-width: 380px !important;
@@ -1506,6 +1506,7 @@
     }
 
     #confirmArrivalModal .modal-content.confirm-action-modal,
+    #confirmDropOffModal .modal-content.confirm-action-modal,
     #rideConfirmedModal .modal-content.ride-confirmed-modal {
         max-width: 95% !important;
     }
