@@ -1,12 +1,61 @@
 [build]
   publish = "DriverManagementt"
   
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = false
+  minify = false
+
+[build.processing.js]
+  bundle = false
+  minify = false
+
 [[redirects]]
   from = "/"
   to = "/html/dashboard.html"
-  status = 301
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/html/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/schedule"
+  to = "/html/schedule.html"
+  status = 200
+
+[[redirects]]
+  from = "/messages"
+  to = "/html/messages.html"
+  status = 200
+
+[[redirects]]
+  from = "/wallet"
+  to = "/html/wallet.html"
+  status = 200
+
+[[redirects]]
+  from = "/history"
+  to = "/html/history.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/html/profile.html"
+  status = 200
 
 [[redirects]]
   from = "/*"
-  to = "/html/:splat"
+  to = "/html/dashboard.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
