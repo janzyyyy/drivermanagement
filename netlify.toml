@@ -12,11 +12,24 @@
   bundle = false
   minify = false
 
+# Landing page
 [[redirects]]
   from = "/"
-  to = "/html/dashboard.html"
+  to = "/html/index.html"
   status = 200
 
+# Authentication pages
+[[redirects]]
+  from = "/login"
+  to = "/html/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/html/register.html"
+  status = 200
+
+# Dashboard and main pages
 [[redirects]]
   from = "/dashboard"
   to = "/html/dashboard.html"
@@ -47,9 +60,10 @@
   to = "/html/profile.html"
   status = 200
 
+# Fallback - redirect all other routes to landing page
 [[redirects]]
   from = "/*"
-  to = "/html/dashboard.html"
+  to = "/html/index.html"
   status = 200
 
 [[headers]]
@@ -59,3 +73,19 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
