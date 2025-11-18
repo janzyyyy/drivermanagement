@@ -1,9 +1,9 @@
 <?php
 
-$DB_HOST = '127.0.0.1';
+$DB_HOST = 'localhost';
 $DB_NAME = 'journeolink';
 $DB_USER = 'root';
-$DB_PASS = ''; // set your MySQL password
+$DB_PASS = '@Marvin2304'; 
 
 $dsn = "mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4";
 $options = [

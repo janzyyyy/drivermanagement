@@ -13,6 +13,392 @@
         initChangePasswordModal();
         initNotificationToggles();
         initAllPasswordToggles(); // Initialize all password toggles
+
+        // License image zoom functionality
+        const licensePreview = document.getElementById('licensePreview');
+        const licenseImage = document.getElementById('licenseImage');
+        const licenseModal = document.getElementById('licenseModal');
+        const licenseModalImage = document.getElementById('licenseModalImage');
+        const closeLicenseModal = document.getElementById('closeLicenseModal');
+
+        if (licensePreview && licenseImage && licenseModal) {
+            // Open modal on click
+            licensePreview.addEventListener('click', (e) => {
+                // Don't open if clicking upload button
+                if (e.target.closest('#uploadLicenseBtn')) return;
+                
+                licenseModalImage.src = licenseImage.src;
+                licenseModal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scroll
+            });
+
+            // Close modal on close button click
+            closeLicenseModal?.addEventListener('click', () => {
+                licenseModal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+
+            // Close modal on overlay click
+            licenseModal.addEventListener('click', (e) => {
+                if (e.target === licenseModal) {
+                    licenseModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Close modal on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && licenseModal.classList.contains('active')) {
+                    licenseModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        // License upload functionality
+        const uploadLicenseBtn = document.getElementById('uploadLicenseBtn');
+        const licenseFileInput = document.getElementById('licenseFileInput');
+
+        if (uploadLicenseBtn && licenseFileInput) {
+            uploadLicenseBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent triggering preview click
+                licenseFileInput.click();
+            });
+
+            licenseFileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, GIF)');
+                    return;
+                }
+
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    return;
+                }
+
+                // Preview image immediately
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    licenseImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                // Upload to server
+                const formData = new FormData();
+                formData.append('license', file);
+
+                try {
+                    uploadLicenseBtn.disabled = true;
+                    uploadLicenseBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+
+                    const res = await fetch('../php/api/upload_license.php', {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: formData
+                    });
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        throw new Error(data.error || 'Upload failed');
+                    }
+
+                    // Update image src with new path
+                    licenseImage.src = data.path;
+                    licenseModalImage.src = data.path; // Update modal image too
+                    alert('License image uploaded successfully!');
+
+                } catch (err) {
+                    console.error('Upload error:', err);
+                    alert('Failed to upload license image: ' + err.message);
+                    // Revert preview on error
+                    const originalSrc = licenseImage.dataset.original || '../assets/license-sample.svg';
+                    licenseImage.src = originalSrc;
+                    licenseModalImage.src = originalSrc;
+                } finally {
+                    uploadLicenseBtn.disabled = false;
+                    uploadLicenseBtn.innerHTML = '<i class="fa-solid fa-upload"></i> Upload New';
+                    licenseFileInput.value = '';
+                }
+            });
+
+            // Store original src for error rollback
+            if (licenseImage) {
+                licenseImage.dataset.original = licenseImage.src;
+            }
+        }
+
+        // Edit Account Information Modal
+        const editAccountBtn = document.getElementById('editAccountBtn');
+        const editAccountModal = document.getElementById('editAccountModal');
+        const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const editAccountForm = document.getElementById('editAccountForm');
+
+        editAccountBtn?.addEventListener('click', () => {
+            // Pre-fill form with current values
+            document.getElementById('editUsername').value = document.getElementById('username').value;
+            document.getElementById('editEmail').value = document.getElementById('email').value;
+            document.getElementById('editPhone').value = document.getElementById('phone').value;
+            document.getElementById('editAddress').value = document.getElementById('address').value;
+            document.getElementById('editDob').value = document.getElementById('dob').value;
+            
+            editAccountModal.classList.add('active');
+        });
+
+        closeEditModalBtn?.addEventListener('click', () => {
+            editAccountModal.classList.remove('active');
+        });
+
+        cancelEditBtn?.addEventListener('click', () => {
+            editAccountModal.classList.remove('active');
+        });
+
+        editAccountModal?.addEventListener('click', (e) => {
+            if (e.target === editAccountModal) {
+                editAccountModal.classList.remove('active');
+            }
+        });
+
+        editAccountForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                name: document.getElementById('editUsername').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                address: document.getElementById('editAddress').value,
+                dob: document.getElementById('editDob').value
+            };
+
+            try {
+                const res = await fetch('../php/api/update_profile.php', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Update failed');
+                }
+
+                // Update page display
+                document.getElementById('username').value = payload.name;
+                document.getElementById('email').value = payload.email;
+                document.getElementById('phone').value = payload.phone;
+                document.getElementById('address').value = payload.address;
+                document.getElementById('dob').value = payload.dob;
+                
+                // Update header
+                document.querySelector('.user-name').textContent = payload.name;
+                document.querySelector('.user-email').textContent = payload.email;
+                document.querySelector('.profile-name').textContent = payload.name;
+
+                editAccountModal.classList.remove('active');
+                alert('Account information updated successfully!');
+                location.reload(); // Refresh to show updated data
+
+            } catch (err) {
+                console.error('Update error:', err);
+                alert('Failed to update account: ' + err.message);
+            }
+        });
+
+        // Edit Driver Information Modal
+        const editDriverBtn = document.getElementById('editDriverBtn');
+        const editDriverModal = document.getElementById('editDriverModal');
+        const closeDriverModalBtn = document.getElementById('closeDriverModalBtn');
+        const cancelDriverEditBtn = document.getElementById('cancelDriverEditBtn');
+        const editDriverForm = document.getElementById('editDriverForm');
+
+        editDriverBtn?.addEventListener('click', () => {
+            // Pre-fill form
+            document.getElementById('editLicenseNumber').value = document.getElementById('licenseNumber').value;
+            document.getElementById('editIssueDate').value = document.getElementById('issueDate').value;
+            document.getElementById('editExpiryDate').value = document.getElementById('expiryDate').value;
+            document.getElementById('editYearsExperience').value = document.getElementById('yearsExperience').value;
+            document.getElementById('editPreviousJobs').value = document.getElementById('previousJobs').value;
+            
+            editDriverModal.classList.add('active');
+        });
+
+        closeDriverModalBtn?.addEventListener('click', () => {
+            editDriverModal.classList.remove('active');
+        });
+
+        cancelDriverEditBtn?.addEventListener('click', () => {
+            editDriverModal.classList.remove('active');
+        });
+
+        editDriverModal?.addEventListener('click', (e) => {
+            if (e.target === editDriverModal) {
+                editDriverModal.classList.remove('active');
+            }
+        });
+
+        editDriverForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const vehicleCats = Array.from(document.querySelectorAll('#vehicleDropdownMenu input[name="vehicleCapability"]:checked')).map(i => i.value);
+            
+            const payload = {
+                license_number: document.getElementById('editLicenseNumber').value,
+                issue_date: document.getElementById('editIssueDate').value,
+                expiry_date: document.getElementById('editExpiryDate').value,
+                years_experience: document.getElementById('editYearsExperience').value,
+                previous_jobs: document.getElementById('editPreviousJobs').value,
+                vehicle_categories: vehicleCats
+            };
+
+            try {
+                const res = await fetch('../php/api/update_profile.php', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Update failed');
+                }
+
+                // Update page display
+                document.getElementById('licenseNumber').value = payload.license_number;
+                document.getElementById('issueDate').value = payload.issue_date;
+                document.getElementById('expiryDate').value = payload.expiry_date;
+                document.getElementById('yearsExperience').value = payload.years_experience;
+                document.getElementById('previousJobs').value = payload.previous_jobs;
+
+                editDriverModal.classList.remove('active');
+                alert('Driver information updated successfully!');
+                location.reload();
+
+            } catch (err) {
+                console.error('Update error:', err);
+                alert('Failed to update driver info: ' + err.message);
+            }
+        });
+
+        // Change Password Modal
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const changePasswordModal = document.getElementById('changePasswordModal');
+        const closePasswordModalBtn = document.getElementById('closePasswordModalBtn');
+        const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+        const changePasswordForm = document.getElementById('changePasswordForm');
+
+        changePasswordBtn?.addEventListener('click', () => {
+            changePasswordModal.classList.add('active');
+            changePasswordForm.reset();
+        });
+
+        closePasswordModalBtn?.addEventListener('click', () => {
+            changePasswordModal.classList.remove('active');
+        });
+
+        cancelPasswordBtn?.addEventListener('click', () => {
+            changePasswordModal.classList.remove('active');
+        });
+
+        changePasswordModal?.addEventListener('click', (e) => {
+            if (e.target === changePasswordModal) {
+                changePasswordModal.classList.remove('active');
+            }
+        });
+
+        changePasswordForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match!');
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                alert('Password must be at least 8 characters!');
+                return;
+            }
+
+            const payload = {
+                current_password: currentPassword,
+                new_password: newPassword
+            };
+
+            try {
+                const res = await fetch('../php/api/change_password.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Password change failed');
+                }
+
+                changePasswordModal.classList.remove('active');
+                alert('Password changed successfully!');
+                changePasswordForm.reset();
+
+            } catch (err) {
+                console.error('Password change error:', err);
+                alert('Failed to change password: ' + err.message);
+            }
+        });
+
+        // Password toggle visibility
+        document.querySelectorAll('.toggle-password-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
+                const icon = btn.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        });
+
+        // Vehicle dropdown functionality
+        const vehicleDropdownToggle = document.getElementById('vehicleDropdownToggle');
+        const vehicleDropdownMenu = document.getElementById('vehicleDropdownMenu');
+
+        vehicleDropdownToggle?.addEventListener('click', () => {
+            vehicleDropdownMenu.classList.toggle('show');
+            vehicleDropdownToggle.querySelector('i').classList.toggle('fa-chevron-up');
+            vehicleDropdownToggle.querySelector('i').classList.toggle('fa-chevron-down');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#vehicleDropdown')) {
+                vehicleDropdownMenu?.classList.remove('show');
+                vehicleDropdownToggle?.querySelector('i')?.classList.remove('fa-chevron-down');
+                vehicleDropdownToggle?.querySelector('i')?.classList.add('fa-chevron-up');
+            }
+        });
     });
 
     // Profile Tab Switching

@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule - JourneoLink Driver</title>
+    <link rel="icon" type="image/png" href="../assets/logo.png">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/schedule.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.css" />
+</head>
+<body data-page="schedule">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <img src="../assets/logo.png" alt="JourneoLink Logo" class="logo">
+            <span class="brand-name">JOURNEO<span class="brand-link">LINK</span> <span class="brand-driver">DRIVER</span></span>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <span class="user-name">Jenn Mercado</span>
+                <span class="user-email">jennmercado@email.com</span>
+            </div>
+            <img src="../assets/user-avatar.png" alt="User Avatar" class="user-avatar">
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header" id="menuToggle" role="button" tabindex="0" aria-label="Toggle sidebar">
+            <i class="fa-solid fa-grip"></i> MENU
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <a href="dashboard.html" class="nav-item" data-page="dashboard">
+                    <span class="icon"><i class="fa-solid fa-grip"></i></span>
+                    <span class="nav-text">Dashboard</span> 
+                </a>
+                <a href="schedule.html" class="nav-item" data-page="schedule">
+                    <span class="icon"><i class="fa-solid fa-calendar-days"></i></span>
+                    <span class="nav-text">Schedule</span>
+                </a>
+                <a href="messages.html" class="nav-item" data-page="messages">
+                    <span class="icon"><i class="fa-solid fa-message"></i></span>
+                    <span class="nav-text">Messages</span>
+                </a>
+                <a href="wallet.html" class="nav-item" data-page="wallet">
+                    <span class="icon"><i class="fa-solid fa-wallet"></i></span>
+                    <span class="nav-text">My Wallet</span>
+                </a>
+                <a href="history.html" class="nav-item" data-page="history">
+                    <span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                    <span class="nav-text">Compliance History</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-gear"></i> GENERAL
+                </div>
+                <a href="profile.html" class="nav-item" data-page="profile">
+                    <span class="icon"><i class="fa-solid fa-user"></i></span>
+                    <span class="nav-text">Profile</span>
+                </a>
+                <a href="#" class="nav-item" id="logoutBtn">
+                    <span class="icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>Schedule</h1>
+                <p class="welcome-text">Manage your bookings and vehicle assignments</p>
+            </div>
+        </div>
+
+        <!-- Schedule Tabs -->
+        <div class="schedule-tabs">
+            <button class="schedule-tab active" data-tab="bookings">Bookings</button>
+            <button class="schedule-tab" data-tab="ongoing">Ongoing</button>
+        </div>
+
+        <!-- Tab Content: Bookings -->
+        <div class="tab-content active" id="bookings-tab">
+            <div class="section-header">
+                <h2>Available Bookings</h2>
+                <p class="section-subtitle">Browse and Accept Bookings</p>
+            </div>
+            
+            <div class="bookings-grid">
+                <!-- Booking Card 1 -->
+                <div class="booking-card"
+                    data-id="3131"
+                    data-passenger="Juan Dela Cruz"
+                    data-phone="09434323233"
+                    data-pickup="SM North EDSA"
+                    data-pickup-lat="14.6564"
+                    data-pickup-lng="121.0321"
+                    data-dropoff="QC Circle"
+                    data-dropoff-lat="14.6505"
+                    data-dropoff-lng="121.0490"
+                    data-distance="4.2 km"
+                    data-time="45 mins"
+                    data-datetime="Sept 15, 2025 • 08:30 AM"
+                    data-payment="Cash"
+                    data-fare="₱126">
+                    <div class="booking-header">
+                        <div class="booking-distance">
+                            <i class="fa-solid fa-location-arrow"></i> 1.2 Km From You
+                        </div>
+                        <span class="booking-badge badge-now">Just Now</span>
+                    </div>
+                    <div class="booking-passenger">
+                        <i class="fa-solid fa-user"></i> Juan Dela Cruz
+                    </div>
+                    <div class="booking-route">
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot pickup-icon"></i>
+                            <span>SM North EDSA</span>
+                        </div>
+                        <div class="route-line"></div>
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot dropoff-icon"></i>
+                            <span>QC Circle</span>
+                        </div>
+                    </div>
+                    <div class="booking-note">
+                        <i class="fa-solid fa-comment-dots"></i> Hurry, Pick me up now!
+                    </div>
+                    <div class="booking-footer">
+                        <span class="booking-price">₱126</span>
+                        <button class="btn-view-details">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Booking Card 2 -->
+                <div class="booking-card"
+                    data-id="3132"
+                    data-passenger="Maria Santos"
+                    data-phone="09123456789"
+                    data-pickup="Trinoma Mall"
+                    data-pickup-lat="14.6568"
+                    data-pickup-lng="121.0332"
+                    data-dropoff="Manila City Hall"
+                    data-dropoff-lat="14.5995"
+                    data-dropoff-lng="120.9842"
+                    data-distance="6.8 km"
+                    data-time="55 mins"
+                    data-datetime="Nov 1, 2025 • 10:00 AM"
+                    data-payment="GCash"
+                    data-fare="₱180">
+                    <div class="booking-header">
+                        <div class="booking-distance">
+                            <i class="fa-solid fa-location-arrow"></i> 1.2 Km From You
+                        </div>
+                        <span class="booking-badge badge-date">11/1/25</span>
+                    </div>
+                    <div class="booking-passenger">
+                        <i class="fa-solid fa-user"></i> Maria Santos
+                    </div>
+                    <div class="booking-route">
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot pickup-icon"></i>
+                            <span>Trinoma Mall</span>
+                        </div>
+                        <div class="route-line"></div>
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot dropoff-icon"></i>
+                            <span>Manila City Hall</span>
+                        </div>
+                    </div>
+                    <div class="booking-note">
+                        <i class="fa-solid fa-comment-dots"></i> Hurry, Pick me up now!
+                    </div>
+                    <div class="booking-footer">
+                        <span class="booking-price">₱180</span>
+                        <button class="btn-view-details">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Booking Card 3 -->
+                <div class="booking-card"
+                    data-id="3133"
+                    data-passenger="Pedro Reyes"
+                    data-phone="09987654321"
+                    data-pickup="UP Diliman"
+                    data-pickup-lat="14.6537"
+                    data-pickup-lng="121.0685"
+                    data-dropoff="Eastwood City"
+                    data-dropoff-lat="14.6091"
+                    data-dropoff-lng="121.0794"
+                    data-distance="5.5 km"
+                    data-time="38 mins"
+                    data-datetime="Oct 28, 2025 • 02:15 PM"
+                    data-payment="Cash"
+                    data-fare="₱150">
+                    <div class="booking-header">
+                        <div class="booking-distance">
+                            <i class="fa-solid fa-location-arrow"></i> 1.2 Km From You
+                        </div>
+                        <span class="booking-badge badge-date">10/28/25</span>
+                    </div>
+                    <div class="booking-passenger">
+                        <i class="fa-solid fa-user"></i> Pedro Reyes
+                    </div>
+                    <div class="booking-route">
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot pickup-icon"></i>
+                            <span>UP Diliman</span>
+                        </div>
+                        <div class="route-line"></div>
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot dropoff-icon"></i>
+                            <span>Eastwood City</span>
+                        </div>
+                    </div>
+                    <div class="booking-note">
+                        <i class="fa-solid fa-comment-dots"></i> Hurry, Pick me up now!
+                    </div>
+                    <div class="booking-footer">
+                        <span class="booking-price">₱150</span>
+                        <button class="btn-view-details">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Booking Card 4 -->
+                <div class="booking-card"
+                    data-id="3134"
+                    data-passenger="Ana Reyes"
+                    data-phone="09456789012"
+                    data-pickup="Greenhills Shopping Center"
+                    data-pickup-lat="14.6025"
+                    data-pickup-lng="121.0501"
+                    data-dropoff="BGC High Street"
+                    data-dropoff-lat="14.5513"
+                    data-dropoff-lng="121.0516"
+                    data-distance="7.3 km"
+                    data-time="28 mins"
+                    data-datetime="Nov 15, 2025 • 01:00 PM"
+                    data-payment="PayMaya"
+                    data-fare="₱195">
+                    <div class="booking-header">
+                        <div class="booking-distance">
+                            <i class="fa-solid fa-location-arrow"></i> 2.5 Km From You
+                        </div>
+                        <span class="booking-badge badge-date">11/15/25</span>
+                    </div>
+                    <div class="booking-passenger">
+                        <i class="fa-solid fa-user"></i> Ana Reyes
+                    </div>
+                    <div class="booking-route">
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot pickup-icon"></i>
+                            <span>Greenhills Shopping Center</span>
+                        </div>
+                        <div class="route-line"></div>
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot dropoff-icon"></i>
+                            <span>BGC High Street</span>
+                        </div>
+                    </div>
+                    <div class="booking-note">
+                        <i class="fa-solid fa-comment-dots"></i> Need to arrive by 1:30 PM
+                    </div>
+                    <div class="booking-footer">
+                        <span class="booking-price">₱195</span>
+                        <button class="btn-view-details">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Booking Card 5 -->
+                <div class="booking-card"
+                    data-id="3135"
+                    data-passenger="Carlos Mendoza"
+                    data-phone="09567890123"
+                    data-pickup="Mall of Asia"
+                    data-pickup-lat="14.5352"
+                    data-pickup-lng="120.9823"
+                    data-dropoff="NAIA Terminal 3"
+                    data-dropoff-lat="14.5089"
+                    data-dropoff-lng="121.0198"
+                    data-distance="5.8 km"
+                    data-time="20 mins"
+                    data-datetime="Nov 16, 2025 • 05:30 AM"
+                    data-payment="Cash"
+                    data-fare="₱165">
+                    <div class="booking-header">
+                        <div class="booking-distance">
+                            <i class="fa-solid fa-location-arrow"></i> 3.8 Km From You
+                        </div>
+                        <span class="booking-badge badge-date">11/16/25</span>
+                    </div>
+                    <div class="booking-passenger">
+                        <i class="fa-solid fa-user"></i> Carlos Mendoza
+                    </div>
+                    <div class="booking-route">
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot pickup-icon"></i>
+                            <span>Mall of Asia</span>
+                        </div>
+                        <div class="route-line"></div>
+                        <div class="route-item">
+                            <i class="fa-solid fa-location-dot dropoff-icon"></i>
+                            <span>NAIA Terminal 3</span>
+                        </div>
+                    </div>
+                    <div class="booking-note">
+                        <i class="fa-solid fa-comment-dots"></i> Flight at 7 AM, please hurry!
+                    </div>
+                    <div class="booking-footer">
+                        <span class="booking-price">₱165</span>
+                        <button class="btn-view-details">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Ongoing -->
+        <div class="tab-content" id="ongoing-tab">
+            <div class="section-header">
+                <h2>Ongoing Bookings</h2>
+                <p class="section-subtitle">Track Your Current Active Rides</p>
+            </div>
+            
+            <div class="bookings-grid">
+                <!-- Accepted bookings will appear here dynamically -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Ride Confirmed Modal -->
+    <div class="modal" id="rideConfirmedModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content ride-confirmed-modal">
+            <button class="modal-close-confirmed" id="closeRideConfirmed">✕</button>
+            <div class="modal-header-confirmed">
+                <h3 class="modal-title-confirmed">Confirm Action</h3>
+            </div>
+            <div class="modal-body-confirmed">
+                <p class="modal-message-confirmed">Are you sure you want to <span class="text-highlight">APPROVE</span> to the passenger's pickup point?</p>
+            </div>
+            <div class="modal-footer-confirmed">
+                <button class="btn-confirm-ride" id="proceedToDetails">Confirm</button>
+                <button class="btn-cancel-ride" id="cancelRideConfirmed">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div class="modal" id="bookingDetailsModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" id="closeBookingDetails">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-body">
+                <div class="booking-details-container">
+                    <div class="details-left">
+                        <div class="modal-header-section">
+                            <h3 class="modal-title">Booking Details</h3>
+                            <p class="booking-id">ID: 3131</p>
+                        </div>
+                        
+                        <div class="passenger-info">
+                            <div class="passenger-icon">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div class="passenger-data">
+                                <span class="passenger-label">Passenger</span>
+                                <span class="passenger-name" id="passengerName">Juan Dela Cruz</span>
+                                <span class="passenger-phone" id="passengerPhone">09434325223</span>
+                            </div>
+                            <button class="btn-contact-passenger" id="contactPassengerBtn" title="Contact Passenger">
+                                <i class="fa-solid fa-message"></i> Contact Passenger
+                            </button>
+                        </div>
+
+                        <div class="route-info-section">
+                            <h4 class="section-title">Route Information</h4>
+                            <div class="route-content">
+                                <div class="route-locations">
+                                    <div class="route-location-item">
+                                        <i class="fa-solid fa-location-dot pickup-icon"></i>
+                                        <div class="location-text">
+                                            <span class="location-label">Pickup Location</span>
+                                            <span class="location-value" id="pickupLocation">SM North EDSA</span>
+                                        </div>
+                                    </div>
+                                    <div class="route-location-item">
+                                        <i class="fa-solid fa-location-dot dropoff-icon"></i>
+                                        <div class="location-text">
+                                            <span class="location-label">Drop-off Location</span>
+                                            <span class="location-value" id="dropoffLocation">QC Circle</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="route-stats-vertical">
+                                    <div class="route-stat-item">
+                                        <span class="stat-label">Distance</span>
+                                        <span class="stat-value" id="routeDistance">4.2 km</span>
+                                    </div>
+                                    <div class="route-stat-item">
+                                        <span class="stat-label">Est. Time</span>
+                                        <span class="stat-value" id="routeTime">45 mins</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="trip-details-section">
+                            <h4 class="section-title">Trip Details</h4>
+                            <div class="trip-row">
+                                <span class="trip-label">Date & Time</span>
+                                <span class="trip-value" id="tripDateTime">Sept 15, 2025 • 08:30 AM</span>
+                            </div>
+                            <div class="trip-row">
+                                <span class="trip-label">Payment Method</span>
+                                <span class="trip-value" id="paymentMethod">Cash</span>
+                            </div>
+                        </div>
+
+                        <div class="fare-total-section">
+                            <span class="fare-label">Total Fare</span>
+                            <span class="fare-amount" id="totalFare">₱126</span>
+                        </div>
+
+                        <div class="modal-actions-buttons">
+                            <button class="btn-arrived" id="acceptBookingBtn">Accept Booking</button>
+                            <button class="btn-cancel-booking" id="cancelBookingBtn">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="details-right">
+                        <div id="bookingMap" class="booking-map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ongoing Booking Details Modal -->
+    <div class="modal" id="ongoingBookingModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" id="closeOngoingBooking">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-body">
+                <div class="booking-details-container">
+                    <div class="details-left">
+                        <div class="modal-header-section">
+                            <h3 class="modal-title">Booking Details</h3>
+                            <p class="booking-id" id="ongoingBookingId">ID: 3131</p>
+                        </div>
+                        
+                        <div class="passenger-info">
+                            <div class="passenger-icon">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div class="passenger-data">
+                                <span class="passenger-label">Passenger</span>
+                                <span class="passenger-name" id="ongoingPassengerName">Juan Dela Cruz</span>
+                                <span class="passenger-phone" id="ongoingPassengerPhone">09434325223</span>
+                            </div>
+                            <button class="btn-contact-passenger" id="contactOngoingPassengerBtn" title="Contact Passenger">
+                                <i class="fa-solid fa-message"></i> Contact Passenger
+                            </button>
+                        </div>
+
+                        <div class="route-info-section">
+                            <h4 class="section-title">Route Information</h4>
+                            <div class="route-content">
+                                <div class="route-locations">
+                                    <div class="route-location-item">
+                                        <i class="fa-solid fa-location-dot pickup-icon"></i>
+                                        <div class="location-text">
+                                            <span class="location-label">Pickup Location</span>
+                                            <span class="location-value" id="ongoingPickupLocation">SM North EDSA</span>
+                                        </div>
+                                    </div>
+                                    <div class="route-location-item">
+                                        <i class="fa-solid fa-location-dot dropoff-icon"></i>
+                                        <div class="location-text">
+                                            <span class="location-label">Drop-off Location</span>
+                                            <span class="location-value" id="ongoingDropoffLocation">QC Circle</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="route-stats-vertical">
+                                    <div class="route-stat-item">
+                                        <span class="stat-label">Distance</span>
+                                        <span class="stat-value" id="ongoingRouteDistance">4.2 km</span>
+                                    </div>
+                                    <div class="route-stat-item">
+                                        <span class="stat-label">Est. Time</span>
+                                        <span class="stat-value" id="ongoingRouteTime">45 mins</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="trip-details-section">
+                            <h4 class="section-title">Trip Details</h4>
+                            <div class="trip-row">
+                                <span class="trip-label">Date & Time</span>
+                                <span class="trip-value" id="ongoingTripDateTime">Sept 15, 2025 • 08:30 AM</span>
+                            </div>
+                            <div class="trip-row">
+                                <span class="trip-label">Payment Method</span>
+                                <span class="trip-value" id="ongoingPaymentMethod">Cash</span>
+                            </div>
+                        </div>
+
+                        <div class="fare-total-section">
+                            <span class="fare-label">Total Fare</span>
+                            <span class="fare-amount" id="ongoingTotalFare">₱126</span>
+                        </div>
+
+                        <div class="modal-actions-buttons">
+                            <button class="btn-arrived" id="arrivedAtPickupBtn">Arrived at Pickup Location</button>
+                            <button class="btn-cancel-booking" id="cancelOngoingBookingBtn">Cancel Booking</button>
+                        </div>
+                    </div>
+
+                    <div class="details-right">
+                        <div id="ongoingBookingMap" class="booking-map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Arrival Modal -->
+    <div class="modal" id="confirmArrivalModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content confirm-action-modal">
+            <button class="modal-close-action" id="closeConfirmArrival">✕</button>
+            <div class="modal-header-action">
+                <h3 class="modal-title-action">Confirm Action</h3>
+            </div>
+            <div class="modal-body-action">
+                <p class="modal-message-action">Are you sure you want to <span class="text-highlight">ARRIVED</span> to the passenger's pickup point?</p>
+            </div>
+            <div class="modal-footer-action">
+                <button class="btn-confirm-action" id="confirmArrivalBtn">Confirm</button>
+                <button class="btn-cancel-action" id="cancelArrivalBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Drop Off Modal -->
+    <div class="modal" id="confirmDropOffModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content confirm-action-modal">
+            <button class="modal-close-action" id="closeConfirmDropOff">✕</button>
+            <div class="modal-header-action">
+                <h3 class="modal-title-action">Confirm Action</h3>
+            </div>
+            <div class="modal-body-action">
+                <p class="modal-message-action">Confirm that passenger has been <span class="text-highlight">DROPPED OFF</span> at destination?</p>
+            </div>
+            <div class="modal-footer-action">
+                <button class="btn-confirm-action" id="confirmDropOffBtn">Confirm</button>
+                <button class="btn-cancel-action" id="cancelDropOffBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content logout-modal-content">
+            <div class="logout-modal-body">
+                <div class="logout-modal-header">
+                    <h3 class="logout-modal-title">Confirm Logout</h3>
+                    <p class="logout-modal-text">Are you sure you want to leave?</p>
+                </div>
+                <div class="logout-modal-actions">
+                    <button class="btn-logout-confirm" id="confirmLogout">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Yes, Log Out
+                    </button>
+                    <button class="btn-logout-cancel" id="cancelLogout">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/schedule.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "journeolink",
+            "database": "journeolink",
+            "password": "@Marvin2304",
+            "connectionTimeout": 50,
+            "username": "root"
+        }
+    ]
+}
